@@ -1,4 +1,6 @@
 import "./global.css";
+import { NextAuthWrapper } from "./NextAuthWrapper";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function RootLayout({
   children,
@@ -7,7 +9,10 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <NextAuthWrapper>{children}</NextAuthWrapper>
+        <Toaster />
+      </body>
     </html>
   );
 }

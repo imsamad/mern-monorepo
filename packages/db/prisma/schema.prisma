@@ -1,8 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model VerificationToken {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  token String
+
+  // this key identifier instead of userId is taken for the conformity reasons with PrismaAdapters.
+  identifier String   @unique @db.ObjectId
+  user       User     @relation(fields: [identifier], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  email       String  @unique
+  phoneNumber Int?
+  password    String
+  username    String
+  fullName    String
+  name        String?
+  image       String?
+
+  emailVerified       DateTime?
+  phoneNumberVerified DateTime?
+
+  isBlocked Boolean @default(false)
+  isAdmin   Boolean @default(false)
+
+  profile         Profile?
+  confirmationOTP VerificationToken?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+  reviews  Review[]
+  carts    CartItem[]
+}
+
+model Product {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  description     String
+  price           TPrice
+  dimension       ProductDimension
+  slug            String           @unique
+  quantityInStock Int
+  reviewsCount    Int
+  tableProps   TTableProps[]
+  medias       TMedia[]
+  
+  reviews      Review[]
+  partOfCarts  CartItem[]
+  partOfOrders OrderItem[]
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  // orders Order[]
+}
+
+model Review {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  rating  Int
+  comment String?
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  productId String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+type TPrice {
+  amount   Float
+  currency ECurrencySymbol
+}
+
+enum ECurrencySymbol {
+  USD
+  INR
+}
+
+model CartItem {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  quantity Int
+  userId   String @db.ObjectId
+  user     User   @relation(fields: [userId], references: [id])
+
+  productId String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  items         OrderItem[]
+  totalAmount   Int
+  itemsPrice Int
+  shippingPrice Int
+  taxPrice Int
+
+  paidAt DateTime?
+  paidJson Json?
+  address Address
+  
+  outOfDelivery DateTime?
+  delivered DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model OrderItem {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  productsId String  @db.ObjectId
+  product    Product @relation(fields: [productsId], references: [id])
+
+  priceAtThatTime TPrice
+  quantity        Int
+
+  orderId String @db.ObjectId
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+type TTableProps {
+  key   String
+  value String
+}
+
+type ProductMedia {
+  medias String[]
+}
+
+type TMedia {
+  order     Int
+  type      MediaEnum
+  url       String
+  isDefault Boolean   @default(false)
+}
+
+enum MediaEnum {
+  IMAGE
+  VIDEO
+  AUDIO
+}
+
+type ProductDimension {
+  weight Int
+  length Int
+  width  Int
+  height Int
+}
+
+model Profile {
+  // userId String @unique @db.ObjectId
+
+  // as the user authorised, profile entrt would be created immediately with id = user.id
+  // no extra userId field would be used, as User and Profile would have 1:1 mapping
+  user        User         @relation(fields: [id], references: [id])
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  gender      Gender_Enum?
+  dateOfBirth DateTime?
+  currentCTC  Int?
+
+  address Address?
+}
+
+enum Gender_Enum {
+  MALE
+  FEMALE
+}
+
+type TDateRange {
+  start DateTime
+  end   DateTime?
+}
+
+type TInstitute {
+  name String
+  url  String?
+}
+
+type Address {
+  city      String?
+  state     String?
+  country   String?
+  pincode   String?
+  longitude String?
+  latitude  String?
 }

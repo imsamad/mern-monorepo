@@ -19,6 +19,7 @@
     "preset": "@repo/jest-presets/node"
   },
   "devDependencies": {
+    "@repo/db": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/jest-presets": "workspace:*",
     "@repo/typescript-config": "workspace:*",
@@ -27,5 +28,8 @@
     "jest": "^29.7.0",
     "tsup": "^8.0.2",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
   }
 }

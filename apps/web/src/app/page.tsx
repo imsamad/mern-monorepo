@@ -1,12 +1,7 @@
-import { Button } from "@/components/ui/button";
+import React from "react";
 
-const HomePage = async () => {
-  return (
-    <div>
-      <Button>csdjnk</Button>
-      <p>HomePageee</p>
-    </div>
-  );
+const HomePage = () => {
+  return <div>HomePage</div>;
 };
 
 export default HomePage;
