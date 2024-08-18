@@ -51,7 +51,7 @@ const AuthForm = () => {
       ? "signup"
       : pathname.includes("login")
         ? "login"
-        : "otp",
+        : "otp"
   );
 
   const loginForm = useForm<TLoginSchema>({
@@ -132,7 +132,7 @@ const AuthForm = () => {
   const startTimer = () => {
     const min = parseInt(
       process.env.NEXT_PUBLIC_OTP_RETRY_IN_MIN! as string,
-      10,
+      10
     );
 
     flushSync(() => {

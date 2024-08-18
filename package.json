@@ -11,7 +11,8 @@
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "db:generate": "turbo run db:generate -F=@repo/db",
-    "clean-x": "rm -rf node_modules .turbo && cd apps/web && rm -rf node_modules .turbo .next && cd ../server && rm -rf node_modules .turbo dist && cd ../../packages/db &&  rm -rf node_modules .turbo dist && cd ../utils &&  rm -rf node_modules dist"
+    "clean-x": "rm -rf node_modules .turbo && cd apps/web && rm -rf node_modules .turbo .next && cd ../server && rm -rf node_modules .turbo dist && cd ../../packages/db &&  rm -rf node_modules .turbo dist && cd ../utils &&  rm -rf node_modules dist",
+    "copy:env": "cp packages/db/.env.example packages/db/.env && cp apps/web/.env.example apps/web/.env && cp apps/server/.env.example apps/server/.env"
   },
   "devDependencies": {
     "prettier": "^3.2.5",

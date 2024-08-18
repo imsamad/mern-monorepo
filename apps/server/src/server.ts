@@ -5,10 +5,15 @@ require("dotenv").config({
 import express, { type Express } from "express";
 import morgan from "morgan";
 import cors from "cors";
-import { authRouter } from "./routers/authRouter";
+import fileUpload from "express-fileupload";
+import path from "path";
+
 import cookieParser from "cookie-parser";
 import { CustomResponseError } from "@repo/utils";
+
 import { errorHandlerMiddleware } from "./middleware/errorHandlerMiddleware";
+import { assetRouter } from "./routers/assetRouter";
+import { authRouter } from "./routers/authRouter";
 
 const app: Express = express();
 
@@ -18,18 +23,30 @@ app
   .use(express.json())
   .use(express.urlencoded({ extended: false }))
   .use(cookieParser())
-
   .use(
     cors({
       origin: process.env.CORS_ORIGIN,
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE"],
-    }),
+    })
+  )
+  .use(
+    fileUpload({
+      useTempFiles: true,
+      tempFileDir: path.join(process.cwd(), "__tmp__"),
+      createParentPath: true,
+      safeFileNames: true,
+      uriDecodeFileNames: true,
+      uploadTimeout: 60_000,
+      preserveExtension: true,
+    })
   );
 
 app.use("/api/v1/auth", authRouter);
-app.get(["/status", "/"], async (req, res) => {
-  res.json({ ok: true });
+app.use("/api/v1/assets", assetRouter);
+
+app.post(["/status", "/"], async (req, res) => {
+  res.send("running");
 });
 
 app.use(() => {
